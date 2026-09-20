@@ -10,26 +10,18 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
-
-    - name: Set up Python
-      uses: actions/setup-python@v5
-      with:
-        python-version: '3.10'
-
-    - name: Install dependencies
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y build-essential libssl-dev libffi-dev python3-dev
-        pip install --upgrade pip
-        pip install buildozer cython kivy
+    - name: Checkout Repository
+      uses: actions/checkout@v4
 
     - name: Build with Buildozer
-      run: |
-        buildozer -s android debug
+      uses: ArtemSBulgakov/buildozer-action@v1
+      id: buildozer
+      with:
+        command: buildozer android debug
+        buildozer_version: stable
 
     - name: Upload APK Artifact
       uses: actions/upload-artifact@v4
       with:
         name: package
-        path: bin/*.apk
+        path: ${{ steps.buildozer.outputs.filename }}
